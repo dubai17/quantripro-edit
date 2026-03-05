@@ -67,8 +67,8 @@
         .chart-value { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: bold; color: #333; white-space: nowrap; }
         .chart-label { margin-top: 8px; font-size: 11px; text-align: center; color: #555; word-wrap: break-word; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.2; height: 28px; }
 
-        .progress-bar-container { width: 100%; background-color: #e9ecef; border-radius: 4px; height: 10px; margin-top: 5px; }
-        .progress-bar { height: 100%; border-radius: 4px; text-align: center; color: white; font-size: 11px; line-height: 20px; transition: width 0.5s; }
+        .progress-bar-container { width: 100%; background-color: #e9ecef; border-radius: 4px; height: 10px; margin-top: 5px; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 4px; text-align: center; color: white; font-size: 11px; line-height: 10px; transition: width 0.5s; display: flex; align-items: center; justify-content: center;}
         .filter-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;}
         .custom-filter-container { display: none; background: #fff; padding: 5px 10px; border-radius: 4px; border: 1px solid #ccc; gap: 10px; align-items: center; margin-left: 10px; }
         .custom-filter-container.active { display: flex; }
@@ -243,7 +243,33 @@
                 <button type="submit" class="btn btn-primary">💾 Lưu Phiếu</button>
             </form>
             </div>
-            <div class="card"><h3>📜 Lịch Sử Thu Chi</h3><div style="max-height: 400px; overflow-y: auto;"><table id="cashflowTable"><thead><tr><th>Ngày</th><th>Loại</th><th>Số tiền</th><th>Đơn hàng</th><th>Mục</th><th>Xóa</th></tr></thead><tbody></tbody></table></div></div>
+            
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="margin: 0;">📜 Lịch Sử Thu Chi</h3>
+                    <div style="display: flex; gap: 10px; align-items: center; background: #eef7ff; padding: 8px; border-radius: 4px; border: 1px solid #b8daff;">
+                        <span style="font-weight: bold; font-size: 12px; color: #004085;">📅 Lọc:</span>
+                        <input type="date" id="cfFilterStart" class="form-control" style="width: auto; padding: 4px;" onchange="renderCashflow()">
+                        <span style="font-weight: bold; font-size: 12px;">-</span>
+                        <input type="date" id="cfFilterEnd" class="form-control" style="width: auto; padding: 4px;" onchange="renderCashflow()">
+                        <select id="cfFilterCategory" class="form-control" style="width: auto; padding: 4px;" onchange="renderCashflow()">
+                            <option value="">-- Tất cả hạng mục --</option>
+                            <option value="Tiền điện/nước">Tiền điện/nước</option>
+                            <option value="Lương nhân viên">Lương nhân viên</option>
+                            <option value="Thuê mặt bằng">Thuê mặt bằng</option>
+                            <option value="Phí Ship">Phí Ship</option>
+                            <option value="Thu khác">Thu khác</option>
+                        </select>
+                        <button class="btn btn-secondary btn-sm" onclick="clearCfFilter()">Bỏ lọc</button>
+                    </div>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table id="cashflowTable">
+                        <thead><tr><th>Ngày</th><th>Loại</th><th>Số tiền</th><th>Đơn hàng</th><th>Mục</th><th>Xóa</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -251,8 +277,25 @@
         <div class="card" style="height: 100%; overflow: hidden;">
             <div class="crm-layout">
                 <div class="crm-sidebar">
+                    
+                    <!-- BỘ LỌC DOANH THU KHÁCH HÀNG -->
+                    <div style="margin-bottom: 15px; background: #eef7ff; padding: 10px; border-radius: 4px; border: 1px solid #b8daff;">
+                        <h4 style="margin: 0 0 10px 0; color: #004085; font-size: 14px;">📅 Lọc Doanh Thu</h4>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 12px; font-weight: bold;">Từ:</span>
+                                <input type="date" id="custFilterStart" class="form-control" style="width: 75%; padding: 4px;" onchange="reRenderCurrentCustomer()">
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 12px; font-weight: bold;">Đến:</span>
+                                <input type="date" id="custFilterEnd" class="form-control" style="width: 75%; padding: 4px;" onchange="reRenderCurrentCustomer()">
+                            </div>
+                            <button class="btn btn-secondary btn-sm" style="justify-content: center;" onclick="clearCustFilter()">Bỏ lọc (Tất cả)</button>
+                        </div>
+                    </div>
+
                     <div style="position: sticky; top: 0; background: white; padding-bottom: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px;">
-                        <input type="text" id="crmSearch" class="form-control" placeholder="🔍 Tìm SĐT hoặc Tên..." oninput="renderCrmSidebar()">
+                        <input type="text" id="crmSearch" class="form-control" placeholder="🔍 Tìm SĐT, Tên hoặc Mã PXK..." oninput="renderCrmSidebar()">
                     </div>
                     <div id="crmCustomerList"></div>
                 </div>
@@ -268,8 +311,52 @@
     </div>
 
     <div id="tab-staff" class="tab-pane">
-        <div class="card"><h3>Thêm Nhân Viên</h3><form id="addStaffForm" class="form-grid"><input type="text" id="staffName" class="form-control" required placeholder="Tên"><input type="text" id="staffPhone" class="form-control" placeholder="SĐT"><input type="text" id="staffAddress" class="form-control" placeholder="ĐC"><input type="text" id="staffNote" class="form-control" placeholder="Note"><button class="btn btn-success">➕ Thêm</button></form></div>
-        <div class="card"><h3>Danh Sách Sales</h3><table id="staffTable"><thead><tr><th>Tên</th><th>SĐT</th><th>ĐC</th><th>Note</th><th>Xóa</th></tr></thead><tbody></tbody></table></div>
+        <div class="card" style="height: 100%; overflow: hidden;">
+            <div class="crm-layout">
+                <div class="crm-sidebar">
+                    
+                    <!-- BỘ LỌC DOANH THU NHÂN VIÊN -->
+                    <div style="margin-bottom: 15px; background: #eef7ff; padding: 10px; border-radius: 4px; border: 1px solid #b8daff;">
+                        <h4 style="margin: 0 0 10px 0; color: #004085; font-size: 14px;">📅 Lọc Doanh Thu</h4>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 12px; font-weight: bold;">Từ:</span>
+                                <input type="date" id="staffFilterStart" class="form-control" style="width: 75%; padding: 4px;" onchange="reRenderCurrentStaff()">
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 12px; font-weight: bold;">Đến:</span>
+                                <input type="date" id="staffFilterEnd" class="form-control" style="width: 75%; padding: 4px;" onchange="reRenderCurrentStaff()">
+                            </div>
+                            <button class="btn btn-secondary btn-sm" style="justify-content: center;" onclick="clearStaffFilter()">Bỏ lọc (Tất cả)</button>
+                        </div>
+                    </div>
+
+                    <!-- THÊM NHÂN VIÊN MỚI -->
+                    <div style="margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 4px; border: 1px solid #dee2e6;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--primary-color);">➕ Thêm Nhân Viên</h4>
+                        <form id="addStaffForm" style="display: flex; flex-direction: column; gap: 8px;">
+                            <input type="text" id="staffName" class="form-control" required placeholder="Tên NV (*)">
+                            <input type="text" id="staffPhone" class="form-control" placeholder="SĐT">
+                            <input type="text" id="staffAddress" class="form-control" placeholder="ĐC">
+                            <input type="text" id="staffNote" class="form-control" placeholder="Ghi chú">
+                            <button class="btn btn-success btn-sm" style="justify-content: center;">Thêm mới</button>
+                        </form>
+                    </div>
+
+                    <div style="position: sticky; top: 0; background: white; padding-bottom: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px;">
+                        <input type="text" id="staffSearch" class="form-control" placeholder="🔍 Tìm nhân sự..." oninput="renderStaffSidebar()">
+                    </div>
+                    <div id="staffListSidebar"></div>
+                </div>
+                <div class="crm-detail" id="staffDetailView">
+                    <div style="text-align: center; color: #888; margin-top: 100px;">
+                        <span style="font-size: 50px;">👨‍💼</span>
+                        <h3>Chọn nhân sự từ danh sách bên trái</h3>
+                        <p>Thông tin chi tiết, doanh thu và lịch sử bán hàng sẽ hiển thị ở đây.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="tab-inventory" class="tab-pane">
@@ -432,6 +519,8 @@
     
     let editingOrderId = null;
     let currentReportPeriod = 'today';
+    let currentViewedStaff = null;
+    let currentViewedCustomer = null;
 
     // --- SAFE STARTUP ---
     document.addEventListener('DOMContentLoaded', () => { 
@@ -495,7 +584,7 @@
             }
             if(tabId === 'tab-cashflow') { renderCashflow(); updateOrderDatalist(); }
             if(tabId === 'tab-customers') renderCrmSidebar();
-            if(tabId === 'tab-staff') renderStaff();
+            if(tabId === 'tab-staff') renderStaffSidebar();
             if(tabId === 'tab-inventory') { renderSuppliers(); populateSupplierSelect(); renderInventory(); updateProductDatalist('productListStock'); createStockRow(); }
             if(tabId === 'tab-reports') filterReports(currentReportPeriod || 'today'); 
         } catch(e) { console.error("Tab Error", e); }
@@ -546,21 +635,107 @@
         } catch (error) { alert('Lỗi kết nối!'); event.target.textContent = "☁️ Đồng bộ từ Sheet"; event.target.disabled = false; }
     };
 
+    const reRenderCurrentCustomer = () => {
+        if(currentViewedCustomer) viewCustomerDetail(currentViewedCustomer);
+    };
+
+    const clearCustFilter = () => {
+        document.getElementById('custFilterStart').value = '';
+        document.getElementById('custFilterEnd').value = '';
+        reRenderCurrentCustomer();
+    };
+
     const renderCrmSidebar = () => {
         const listDiv = document.getElementById('crmCustomerList');
         const term = normalizeStr(document.getElementById('crmSearch').value);
         let customers = loadData(KEYS.CUSTOMERS);
-        if (term) customers = customers.filter(c => c.phone.includes(term) || normalizeStr(c.name).includes(term));
+        const orders = loadData(KEYS.ORDERS);
+
+        if (term) {
+            customers = customers.filter(c => {
+                const matchPhone = c.phone.includes(term);
+                const matchName = normalizeStr(c.name).includes(term);
+                // Tìm kiếm khách hàng nếu họ có mã đơn hàng (PXK) khớp với từ khóa
+                const matchOrder = orders.some(o => o.customer.phone === c.phone && normalizeStr(o.id).includes(term));
+                return matchPhone || matchName || matchOrder;
+            });
+        }
+        
         if(customers.length === 0) { listDiv.innerHTML = '<div style="padding:15px;text-align:center;color:#999">Chưa có khách hàng</div>'; return; }
         customers.reverse();
         listDiv.innerHTML = customers.map(c => `<div class="cust-item" onclick="viewCustomerDetail('${c.phone}')"><div class="cust-name">${c.name}</div><div class="cust-phone"><span style="color:#666">📱 ${c.phone}</span></div></div>`).join('');
+
+        if(currentViewedCustomer) {
+            document.querySelectorAll('#crmCustomerList .cust-item').forEach(el => {
+                if(el.querySelector('.cust-phone').textContent.includes(currentViewedCustomer)) {
+                    el.classList.add('active');
+                }
+            });
+        }
     };
 
     const viewCustomerDetail = (phone) => {
+        currentViewedCustomer = phone;
         const customers = loadData(KEYS.CUSTOMERS); const customer = customers.find(c => String(c.phone).trim() === String(phone).trim()); if (!customer) return;
-        document.querySelectorAll('.cust-item').forEach(el => el.classList.remove('active')); event.currentTarget.classList.add('active');
-        const orders = loadData(KEYS.ORDERS).filter(o => String(o.customer.phone).trim() === String(phone).trim()).sort((a, b) => new Date(b.date) - new Date(a.date));
-        const totalSpent = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+        
+        document.querySelectorAll('#crmCustomerList .cust-item').forEach(el => el.classList.remove('active')); 
+        if(event && event.currentTarget && event.currentTarget.classList) {
+            event.currentTarget.classList.add('active');
+        } else {
+             document.querySelectorAll('#crmCustomerList .cust-item').forEach(el => {
+                if(el.querySelector('.cust-phone').textContent.includes(phone)) {
+                    el.classList.add('active');
+                }
+            });
+        }
+        
+        let orders = loadData(KEYS.ORDERS).filter(o => String(o.customer.phone).trim() === String(phone).trim());
+        
+        // --- XỬ LÝ LỌC THEO NGÀY ---
+        const startVal = document.getElementById('custFilterStart')?.value;
+        const endVal = document.getElementById('custFilterEnd')?.value;
+        
+        let dateText = "Tất cả thời gian";
+        if (startVal || endVal) {
+            const sDate = startVal ? new Date(startVal) : new Date('2000-01-01');
+            const eDate = endVal ? new Date(endVal) : new Date('2099-12-31');
+            sDate.setHours(0,0,0,0);
+            eDate.setHours(23,59,59,999);
+            
+            orders = orders.filter(o => {
+                const d = new Date(o.date);
+                return d >= sDate && d <= eDate;
+            });
+            
+            const startStr = startVal ? new Date(startVal).toLocaleDateString('vi-VN') : 'Bắt đầu';
+            const endStr = endVal ? new Date(endVal).toLocaleDateString('vi-VN') : 'Hiện tại';
+            dateText = `${startStr} - ${endStr}`;
+        }
+
+        orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        const totalCogs = orders.reduce((sum, o) => sum + (o.cost || 0), 0);
+        
+        // --- TÍNH TỔNG THU / CHI TỪ TAB THU CHI CHO KHÁCH HÀNG NÀY ---
+        const cashflow = loadData(KEYS.CASHFLOW);
+        const customerOrderIds = orders.map(o => o.id);
+        let totalThu = 0;
+        let totalChi = 0;
+        cashflow.forEach(cf => {
+            if (cf.orderId && customerOrderIds.includes(cf.orderId.trim())) {
+                if (cf.type === 'THU') totalThu += cf.amount;
+                if (cf.type === 'CHI') totalChi += cf.amount;
+            }
+        });
+
+        // ÁP DỤNG CÔNG THỨC MỚI THEO YÊU CẦU:
+        const totalSpent = totalCogs + totalThu; 
+        const totalProfit = totalSpent - totalCogs - totalChi;
+
+        const profitMargin = totalSpent > 0 ? ((totalProfit / totalSpent) * 100).toFixed(1) : 0;
+        const marginColor = totalProfit >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
+        const marginWidth = Math.min(100, Math.max(0, Math.abs(profitMargin)));
+
         document.getElementById('crmDetailView').innerHTML = `
             <div class="card" style="border-top: 5px solid var(--primary-color);">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start">
@@ -576,11 +751,51 @@
                     </div>
                     <button class="btn btn-warning btn-sm" onclick="startOrderForCustomer('${customer.phone}', '${customer.name}', '${customer.address}')">🛒 Tạo đơn mới</button>
                 </div>
-                <hr style="margin:20px 0;"><div class="crm-info-box"><div class="crm-stat-card orange"><h4>Tổng Mua</h4><div>${formatCurrency(totalSpent)}</div></div><div class="crm-stat-card green"><h4>Số Đơn</h4><div>${orders.length}</div></div></div>
+                <hr style="margin:20px 0;">
+                
+                <div style="margin-bottom: 10px; font-style: italic; color: #666; font-size: 13px;">
+                    Dữ liệu hiển thị cho khoảng thời gian: <strong style="color:var(--primary-color)">${dateText}</strong>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                        <span>Tỷ lệ Lợi Nhuận / Doanh Thu: <strong style="color:${marginColor}">${profitMargin}%</strong></span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width:${marginWidth}%; background-color:${marginColor};"></div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                    <div style="background: #fffaf0; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <h4 style="margin:0 0 5px 0; color:#666; font-size: 12px; text-transform: uppercase;">Doanh Thu</h4>
+                        <div style="font-size: 16px; font-weight: bold; color: #333;">${formatCurrency(totalSpent)}</div>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #6c757d; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <h4 style="margin:0 0 5px 0; color:#666; font-size: 12px; text-transform: uppercase;">Giá Vốn</h4>
+                        <div style="font-size: 16px; font-weight: bold; color: #333;">${formatCurrency(totalCogs)}</div>
+                    </div>
+                    <div style="background: #fdf4ff; padding: 15px; border-radius: 8px; border-left: 4px solid #8e44ad; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <h4 style="margin:0 0 5px 0; color:#666; font-size: 12px; text-transform: uppercase;">Lợi Nhuận</h4>
+                        <div style="font-size: 16px; font-weight: bold; color: #8e44ad;">${formatCurrency(totalProfit)}</div>
+                    </div>
+                    <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <h4 style="margin:0 0 5px 0; color:#666; font-size: 12px; text-transform: uppercase;">Số Đơn</h4>
+                        <div style="font-size: 16px; font-weight: bold; color: #333;">${orders.length}</div>
+                    </div>
+                    <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border-left: 4px solid #007bff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <h4 style="margin:0 0 5px 0; color:#666; font-size: 12px; text-transform: uppercase;">Phiếu Thu</h4>
+                        <div style="font-size: 16px; font-weight: bold; color: #007bff;">${formatCurrency(totalThu)}</div>
+                    </div>
+                    <div style="background: #fef2f2; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <h4 style="margin:0 0 5px 0; color:#666; font-size: 12px; text-transform: uppercase;">Phiếu Chi</h4>
+                        <div style="font-size: 16px; font-weight: bold; color: #dc3545;">${formatCurrency(totalChi)}</div>
+                    </div>
+                </div>
             </div>
             <h4 style="color:var(--primary-color);">📜 Lịch sử giao dịch</h4>
             <div class="card"><table class="table"><thead><tr><th>Mã ĐH</th><th>Ngày</th><th>Sản phẩm</th><th>Ghi chú NB</th><th>Giá trị</th><th>Sửa</th></tr></thead><tbody>
-                ${orders.length > 0 ? orders.map(o => `<tr><td><b>${o.id}</b></td><td>${new Date(o.date).toLocaleDateString('vi-VN')}</td><td>${o.items.map(i=>`${i.name.split('{')[0]}(x${i.quantity})`).join(', ')}</td><td style="color:red;font-style:italic">${o.internalNote||''}</td><td class="text-right">${formatCurrency(o.totalAmount)}</td><td class="text-center"><button class="btn btn-secondary btn-sm" onclick="startEditOrder('${o.id}')">✏️</button></td></tr>`).join('') : '<tr><td colspan="6" class="text-center">Chưa có đơn hàng.</td></tr>'}
+                ${orders.length > 0 ? orders.map(o => `<tr><td><b>${o.id}</b></td><td>${new Date(o.date).toLocaleDateString('vi-VN')}</td><td>${o.items.map(i=>`${i.name.split('{')[0]}(x${i.quantity})`).join(', ')}</td><td style="color:red;font-style:italic">${o.internalNote||''}</td><td class="text-right">${formatCurrency(o.totalAmount)}</td><td class="text-center"><button class="btn btn-secondary btn-sm" onclick="startEditOrder('${o.id}')">✏️</button></td></tr>`).join('') : '<tr><td colspan="6" class="text-center">Chưa có đơn hàng trong thời gian này.</td></tr>'}
             </tbody></table></div>`;
     };
 
@@ -701,8 +916,211 @@
     const startEditOrder = (id) => { const o = loadData(KEYS.ORDERS).find(x=>x.id===id); if(!o) return; switchTab('tab-sales'); editingOrderId = id; document.getElementById('editModeBanner').style.display='block'; document.getElementById('editingOrderIDText').textContent = id; document.getElementById('btnSaveOrder').textContent = "💾 CẬP NHẬT"; document.getElementById('btnSaveOrder').classList.replace('btn-primary','btn-warning'); document.getElementById('btnCancelEdit').style.display = 'inline-block'; document.getElementById('custPhone').value = o.customer.phone; document.getElementById('custName').value = o.customer.name; document.getElementById('custAddress').value = o.customer.address; document.getElementById('shippingCost').value = formatCurrency(o.shipping).replace(/\D/g,''); document.getElementById('orderNote').value = o.note || ''; document.getElementById('internalNote').value = o.internalNote || ''; document.getElementById('saleStaffSelect').value = o.staff; document.getElementById('orderItemsBody').innerHTML=''; o.items.forEach(i=>createOrderItemRow(i.fullName || i.name, i.quantity, i.price)); if(o.date) document.getElementById('orderDate').value = new Date(o.date).toISOString().slice(0,10); updateInvoicePreview(); }
     const cancelEditOrder = () => { editingOrderId = null; document.getElementById('editModeBanner').style.display='none'; document.getElementById('btnSaveOrder').textContent = "✅ LƯU ĐƠN"; document.getElementById('btnSaveOrder').classList.replace('btn-warning','btn-primary'); document.getElementById('btnCancelEdit').style.display='none'; document.getElementById('custPhone').value=''; document.getElementById('custName').value=''; document.getElementById('custAddress').value=''; document.getElementById('shippingCost').value=0; document.getElementById('orderNote').value=''; document.getElementById('internalNote').value=''; document.getElementById('orderItemsBody').innerHTML=''; createOrderItemRow(); document.getElementById('orderDate').value = new Date().toISOString().slice(0,10); updateInvoicePreview(); }
 
-    const renderStaff = () => { document.querySelector('#staffTable tbody').innerHTML = loadData(KEYS.STAFF).map((s, i) => `<tr><td>${s.name}</td><td>${s.phone}</td><td>${s.address}</td><td>${s.note}</td><td><button class="btn btn-danger btn-sm" onclick="deleteItem('${KEYS.STAFF}', ${i}, renderStaff)">X</button></td></tr>`).join(''); };
-    const handleAddStaff = (e) => { e.preventDefault(); const staff = loadData(KEYS.STAFF); staff.push({ name: document.getElementById('staffName').value, phone: document.getElementById('staffPhone').value, address: document.getElementById('staffAddress').value, note: document.getElementById('staffNote').value }); saveData(KEYS.STAFF, staff); renderStaff(); e.target.reset(); };
+    const reRenderCurrentStaff = () => {
+        if(currentViewedStaff) viewStaffDetail(currentViewedStaff);
+    };
+
+    const clearStaffFilter = () => {
+        document.getElementById('staffFilterStart').value = '';
+        document.getElementById('staffFilterEnd').value = '';
+        reRenderCurrentStaff();
+    };
+
+    const renderStaffSidebar = () => {
+        const listDiv = document.getElementById('staffListSidebar');
+        const term = normalizeStr(document.getElementById('staffSearch')?.value || '');
+        let staff = loadData(KEYS.STAFF);
+        
+        if (term) staff = staff.filter(s => normalizeStr(s.name).includes(term) || (s.phone && s.phone.includes(term)));
+        if(staff.length === 0) { listDiv.innerHTML = '<div style="padding:15px;text-align:center;color:#999">Chưa có nhân sự</div>'; return; }
+        
+        listDiv.innerHTML = staff.map(s => `
+            <div class="cust-item" onclick="viewStaffDetail('${s.name}')">
+                <div style="display:flex; justify-content:space-between; align-items: center;">
+                    <div class="cust-name">${s.name}</div>
+                    <button class="btn btn-danger btn-sm" title="Xóa nhân sự" onclick="event.stopPropagation(); deleteStaffByName('${s.name}')">X</button>
+                </div>
+                <div class="cust-phone"><span style="color:#666">📱 ${s.phone || '...'}</span></div>
+            </div>`).join('');
+
+        // Giữ active state nếu đang xem người này
+        if(currentViewedStaff) {
+            document.querySelectorAll('#staffListSidebar .cust-item').forEach(el => {
+                if(el.querySelector('.cust-name').textContent === currentViewedStaff) {
+                    el.classList.add('active');
+                }
+            });
+        }
+    };
+
+    const deleteStaffByName = (name) => {
+        if(!confirm(`Chắc chắn xóa nhân viên: ${name}?\n(Lịch sử bán hàng của nhân viên này vẫn sẽ được giữ lại trong báo cáo)`)) return;
+        let staff = loadData(KEYS.STAFF);
+        staff = staff.filter(s => s.name !== name);
+        saveData(KEYS.STAFF, staff);
+        
+        if (currentViewedStaff === name) currentViewedStaff = null;
+        
+        renderStaffSidebar();
+        populateStaffSelect();
+        document.getElementById('staffDetailView').innerHTML = `
+            <div style="text-align: center; color: #888; margin-top: 100px;">
+                <span style="font-size: 50px;">👨‍💼</span>
+                <h3>Chọn nhân sự từ danh sách bên trái</h3>
+                <p>Thông tin chi tiết, doanh thu và lịch sử bán hàng sẽ hiển thị ở đây.</p>
+            </div>`;
+    };
+
+    const viewStaffDetail = (name) => {
+        currentViewedStaff = name;
+        const staffList = loadData(KEYS.STAFF);
+        const staff = staffList.find(s => s.name === name);
+        if(!staff) return;
+
+        document.querySelectorAll('#staffListSidebar .cust-item').forEach(el => el.classList.remove('active'));
+        if(event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        } else {
+            document.querySelectorAll('#staffListSidebar .cust-item').forEach(el => {
+                if(el.querySelector('.cust-name').textContent === name) el.classList.add('active');
+            });
+        }
+
+        let orders = loadData(KEYS.ORDERS).filter(o => o.staff === name);
+        
+        // --- XỬ LÝ LỌC THEO NGÀY ---
+        const startVal = document.getElementById('staffFilterStart')?.value;
+        const endVal = document.getElementById('staffFilterEnd')?.value;
+        
+        let dateText = "Tất cả thời gian";
+        if (startVal || endVal) {
+            const sDate = startVal ? new Date(startVal) : new Date('2000-01-01');
+            const eDate = endVal ? new Date(endVal) : new Date('2099-12-31');
+            sDate.setHours(0,0,0,0);
+            eDate.setHours(23,59,59,999);
+            
+            orders = orders.filter(o => {
+                const d = new Date(o.date);
+                return d >= sDate && d <= eDate;
+            });
+            
+            const startStr = startVal ? new Date(startVal).toLocaleDateString('vi-VN') : 'Bắt đầu';
+            const endStr = endVal ? new Date(endVal).toLocaleDateString('vi-VN') : 'Hiện tại';
+            dateText = `${startStr} - ${endStr}`;
+        }
+        
+        orders.sort((a,b) => new Date(b.date) - new Date(a.date));
+        const totalRev = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+
+        document.getElementById('staffDetailView').innerHTML = `
+            <div class="card" style="border-top: 5px solid var(--info-color);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                    <div style="flex:1;">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 5px;">
+                            <span style="font-weight:bold; width: 60px; font-size: 13px;">Tên NV:</span>
+                            <input type="text" id="editStaffName" class="crm-input crm-input-name" style="margin-bottom:0;" value="${staff.name}" disabled>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 5px;">
+                            <span style="font-weight:bold; width: 60px; font-size: 13px;">SĐT:</span>
+                            <input type="text" id="editStaffPhone" class="crm-input" value="${staff.phone || ''}" disabled>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 5px;">
+                            <span style="font-weight:bold; width: 60px; font-size: 13px;">Địa chỉ:</span>
+                            <input type="text" id="editStaffAddress" class="crm-input" value="${staff.address || ''}" disabled>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 5px;">
+                            <span style="font-weight:bold; width: 60px; font-size: 13px;">Ghi chú:</span>
+                            <input type="text" id="editStaffNote" class="crm-input" value="${staff.note || ''}" disabled>
+                        </div>
+                        <div style="margin-top:15px;">
+                            <button id="btnEditStaff" class="btn btn-secondary btn-sm" onclick="enableEditStaff()">✏️ Sửa thông tin</button>
+                            <button id="btnSaveStaff" class="btn btn-success btn-sm" style="display:none;" onclick="saveStaffInfo('${staff.name}')">💾 Lưu</button>
+                            <button id="btnCancelStaff" class="btn btn-danger btn-sm" style="display:none;" onclick="viewStaffDetail('${staff.name}')">❌ Hủy</button>
+                        </div>
+                    </div>
+                </div>
+                <hr style="margin:20px 0;">
+                <div style="margin-bottom: 10px; font-style: italic; color: #666; font-size: 13px;">
+                    Dữ liệu hiển thị cho khoảng thời gian: <strong style="color:var(--primary-color)">${dateText}</strong>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 10px;">
+                    <div style="background: #eef7ff; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                        <h4 style="margin:0 0 5px 0; color:#666; font-size: 12px; text-transform: uppercase;">Doanh Thu Đã Bán</h4>
+                        <div style="font-size: 20px; font-weight: bold; color: var(--primary-color);">${formatCurrency(totalRev)}</div>
+                    </div>
+                    <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid var(--success-color);">
+                        <h4 style="margin:0 0 5px 0; color:#666; font-size: 12px; text-transform: uppercase;">Số Đơn Hàng</h4>
+                        <div style="font-size: 20px; font-weight: bold; color: var(--success-color);">${orders.length}</div>
+                    </div>
+                </div>
+            </div>
+            <h4 style="color:var(--info-color);">📜 Lịch sử bán hàng</h4>
+            <div class="card" style="padding: 0;"><table class="table" style="margin: 0;"><thead><tr><th>Mã ĐH</th><th>Ngày</th><th>Khách Hàng</th><th>Sản phẩm</th><th>Giá trị</th></tr></thead><tbody>
+                ${orders.length > 0 ? orders.map(o => `<tr><td><span style="color:blue; cursor:pointer;" onclick="startEditOrder('${o.id}')">${o.id}</span></td><td>${new Date(o.date).toLocaleDateString('vi-VN')}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.map(i=>`${i.name.split('{')[0]}(x${i.quantity})`).join(', ')}</td><td class="text-right">${formatCurrency(o.totalAmount)}</td></tr>`).join('') : '<tr><td colspan="5" class="text-center" style="padding: 20px;">Nhân sự chưa phát sinh đơn hàng nào trong thời gian này.</td></tr>'}
+            </tbody></table></div>`;
+    };
+
+    const enableEditStaff = () => {
+        ['editStaffName', 'editStaffPhone', 'editStaffAddress', 'editStaffNote'].forEach(id => {
+            document.getElementById(id).disabled = false;
+            document.getElementById(id).classList.add('editing');
+        });
+        document.getElementById('btnEditStaff').style.display = 'none';
+        document.getElementById('btnSaveStaff').style.display = 'inline-block';
+        document.getElementById('btnCancelStaff').style.display = 'inline-block';
+    };
+
+    const saveStaffInfo = (oldName) => {
+        const newName = document.getElementById('editStaffName').value.trim();
+        const newPhone = document.getElementById('editStaffPhone').value.trim();
+        const newAddr = document.getElementById('editStaffAddress').value.trim();
+        const newNote = document.getElementById('editStaffNote').value.trim();
+
+        if(!newName) { alert('Tên không được để trống!'); return; }
+
+        let staffList = loadData(KEYS.STAFF);
+        let orders = loadData(KEYS.ORDERS);
+
+        if(newName !== oldName && staffList.find(s => s.name.toLowerCase() === newName.toLowerCase())) {
+            alert('Tên nhân viên đã tồn tại!'); return;
+        }
+
+        const sIndex = staffList.findIndex(s => s.name === oldName);
+        if(sIndex !== -1) {
+            staffList[sIndex] = { name: newName, phone: newPhone, address: newAddr, note: newNote };
+        }
+
+        // Nếu đổi tên, tự động cập nhật lại tên cho các đơn hàng cũ
+        if (newName !== oldName) {
+            orders.forEach(o => { if(o.staff === oldName) o.staff = newName; });
+            saveData(KEYS.ORDERS, orders);
+        }
+
+        saveData(KEYS.STAFF, staffList);
+        populateStaffSelect(); 
+        alert('Cập nhật nhân sự thành công!');
+        renderStaffSidebar();
+        viewStaffDetail(newName);
+    };
+
+    const handleAddStaff = (e) => { 
+        e.preventDefault(); 
+        const staff = loadData(KEYS.STAFF); 
+        const name = document.getElementById('staffName').value.trim();
+        if(!name) return;
+        if(staff.find(s => s.name.toLowerCase() === name.toLowerCase())) { alert('Tên nhân viên đã tồn tại!'); return; }
+        staff.push({ 
+            name: name, 
+            phone: document.getElementById('staffPhone').value.trim(), 
+            address: document.getElementById('staffAddress').value.trim(), 
+            note: document.getElementById('staffNote').value.trim() 
+        }); 
+        saveData(KEYS.STAFF, staff); 
+        renderStaffSidebar(); 
+        populateStaffSelect(); 
+        e.target.reset(); 
+    };
+    
     const populateStaffSelect = () => { document.getElementById('saleStaffSelect').innerHTML = '<option value="">-- Chọn sales --</option>' + loadData(KEYS.STAFF).map(s => `<option value="${s.name}">${s.name}</option>`).join(''); };
     const renderSuppliers = () => { document.querySelector('#supplierTable tbody').innerHTML = loadData(KEYS.SUPPLIERS).map((s, i) => `<tr><td>${s.name}</td><td>${s.phone}</td><td>${s.address}</td><td><button class="btn btn-danger btn-sm" onclick="deleteItem('${KEYS.SUPPLIERS}', ${i}, renderSuppliers)">X</button></td></tr>`).join(''); };
     const handleAddSupplier = (e) => { e.preventDefault(); const sups = loadData(KEYS.SUPPLIERS); sups.push({ name: document.getElementById('suppName').value, phone: document.getElementById('suppPhone').value, address: document.getElementById('suppAddr').value }); saveData(KEYS.SUPPLIERS, sups); renderSuppliers(); populateSupplierSelect(); e.target.reset(); };
@@ -850,7 +1268,44 @@
     };
     
     const handleCashflowSubmit = (e) => { e.preventDefault(); const cf = { date: document.getElementById('cfDate').value, type: document.getElementById('cfType').value, amount: parseInput(document.getElementById('cfAmount').value), orderId: document.getElementById('cfOrderId').value, category: document.getElementById('cfCategory').value, note: document.getElementById('cfNote').value }; const list = loadData(KEYS.CASHFLOW); list.push(cf); saveData(KEYS.CASHFLOW, list); renderCashflow(); e.target.reset(); alert("Đã lưu phiếu thành công!"); };
-    const renderCashflow = () => { document.querySelector('#cashflowTable tbody').innerHTML = loadData(KEYS.CASHFLOW).sort((a,b)=>new Date(b.date)-new Date(a.date)).map((c, i) => `<tr><td>${c.date}</td><td style="color:${c.type==='THU'?'green':'red'}">${c.type}</td><td>${formatCurrency(c.amount)}</td><td>${c.orderId||'-'}</td><td>${c.category}</td><td><button class="btn btn-danger btn-sm" onclick="deleteItem('${KEYS.CASHFLOW}', ${i}, renderCashflow)">X</button></td></tr>`).join(''); };
+    
+    // --- LỌC THU CHI VÀ TÍNH TỔNG ---
+    const clearCfFilter = () => {
+        document.getElementById('cfFilterStart').value = '';
+        document.getElementById('cfFilterEnd').value = '';
+        document.getElementById('cfFilterCategory').value = '';
+        renderCashflow();
+    };
+
+    const renderCashflow = () => { 
+        // Gắn thêm Original Index để tránh xóa nhầm khi mảng đã bị lọc
+        let list = loadData(KEYS.CASHFLOW).map((c, index) => ({...c, originalIndex: index})); 
+        
+        const startDate = document.getElementById('cfFilterStart')?.value;
+        const endDate = document.getElementById('cfFilterEnd')?.value;
+        const cat = document.getElementById('cfFilterCategory')?.value;
+
+        if (startDate || endDate) {
+            const sDate = startDate ? new Date(startDate) : new Date('2000-01-01');
+            const eDate = endDate ? new Date(endDate) : new Date('2099-12-31');
+            sDate.setHours(0,0,0,0);
+            eDate.setHours(23,59,59,999);
+            
+            list = list.filter(c => {
+                const d = new Date(c.date);
+                return d >= sDate && d <= eDate;
+            });
+        }
+
+        if (cat) {
+            list = list.filter(c => c.category === cat);
+        }
+
+        list.sort((a,b)=>new Date(b.date)-new Date(a.date));
+        
+        document.querySelector('#cashflowTable tbody').innerHTML = list.map(c => `<tr><td>${c.date}</td><td style="color:${c.type==='THU'?'green':'red'}">${c.type}</td><td>${formatCurrency(c.amount)}</td><td>${c.orderId||'-'}</td><td>${c.category}</td><td><button class="btn btn-danger btn-sm" onclick="deleteItem('${KEYS.CASHFLOW}', ${c.originalIndex}, renderCashflow)">X</button></td></tr>`).join(''); 
+    };
+
     const updateOrderDatalist = () => { document.getElementById('orderListSuggestions').innerHTML = loadData(KEYS.ORDERS).map(o => `<option value="${o.id}">`).join(''); }
 
     const filterReports = (period) => {
