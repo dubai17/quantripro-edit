@@ -714,6 +714,10 @@
 
         orders.sort((a, b) => new Date(b.date) - new Date(a.date));
         
+        // Tổng giá trị các đơn hàng (Giá trị bán ra)
+        const totalOrderAmount = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+        
+        // Tổng giá vốn của các đơn hàng (Giá trị nhập)
         const totalCogs = orders.reduce((sum, o) => sum + (o.cost || 0), 0);
         
         // --- TÍNH TỔNG THU / CHI TỪ TAB THU CHI CHO KHÁCH HÀNG NÀY ---
@@ -729,8 +733,11 @@
         });
 
         // ÁP DỤNG CÔNG THỨC MỚI THEO YÊU CẦU:
-        const totalSpent = totalCogs + totalThu; // DOANH THU = GIÁ VỐN + PHIẾU THU
-        const totalProfit = totalSpent - totalChi; // Lợi Nhuận = DOANH THU - PHIẾU CHI
+        // DOANH THU = TỔNG GIÁ TRỊ CÁC ĐƠN HÀNG + PHIẾU THU
+        const totalSpent = totalOrderAmount + totalThu; 
+        
+        // LỢI NHUẬN = DOANH THU - GIÁ VỐN - PHIẾU CHI
+        const totalProfit = totalSpent - totalCogs - totalChi; 
 
         const profitMargin = totalSpent > 0 ? ((totalProfit / totalSpent) * 100).toFixed(1) : 0;
         const marginColor = totalProfit >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
