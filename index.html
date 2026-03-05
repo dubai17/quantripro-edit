@@ -729,8 +729,8 @@
         });
 
         // ÁP DỤNG CÔNG THỨC MỚI THEO YÊU CẦU:
-        const totalSpent = totalCogs + totalThu; 
-        const totalProfit = totalSpent - totalCogs - totalChi;
+        const totalSpent = totalCogs + totalThu; // DOANH THU = GIÁ VỐN + PHIẾU THU
+        const totalProfit = totalSpent - totalChi; // Lợi Nhuận = DOANH THU - PHIẾU CHI
 
         const profitMargin = totalSpent > 0 ? ((totalProfit / totalSpent) * 100).toFixed(1) : 0;
         const marginColor = totalProfit >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
